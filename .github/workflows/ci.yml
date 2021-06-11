@@ -59,7 +59,7 @@ jobs:
           git clone --single-branch --branch eager https://github.com/nf-core/test-datasets.git data
       - name: DELAY to try address some odd behaviour with what appears to be a conflict between parallel htslib jobs leading to CI hangs
         run: | 
-          if [[ $NXF_VER = '' ]]; then sleep 360; fi
+          if [[ $NXF_VER = '' ]]; then sleep 1200; fi
       - name: BASIC Run the basic pipeline with directly supplied single-end FASTQ
         run: |
           nextflow run ${GITHUB_WORKSPACE} -profile test,docker --input 'data/testdata/Mammoth/fastq/*_R1_*.fq.gz' --single_end
@@ -102,6 +102,12 @@ jobs:
       - name: ADAPTERREMOVAL Run the basic pipeline with preserve5p end and merged reads only options
         run: |
           nextflow run ${GITHUB_WORKSPACE} -profile test_tsv,docker --preserve5p --mergedonly
+      - name: POST_AR_FASTQ_TRIMMING Run the basic pipeline post-adapterremoval FASTQ trimming
+        run: |
+          nextflow run ${GITHUB_WORKSPACE} -profile test_tsv,docker --run_post_ar_trimming
+      - name: POST_AR_FASTQ_TRIMMING Run the basic pipeline post-adapterremoval FASTQ trimming, but skip adapterremoval
+        run: |
+          nextflow run ${GITHUB_WORKSPACE} -profile test_tsv,docker --run_post_ar_trimming --skip_adapterremoval
       - name: MAPPER_CIRCULARMAPPER Test running with CircularMapper
         run: |
           nextflow run ${GITHUB_WORKSPACE} -profile test_tsv,docker --mapper 'circularmapper' --circulartarget 'NC_007596.2'
